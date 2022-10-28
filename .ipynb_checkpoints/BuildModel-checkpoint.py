@@ -4,12 +4,14 @@ import requests
 import json as js
 import time
 import logging
-
+#make a change
+#make another change
+#add a comment
 logging.basicConfig(level=logging.INFO)
 user_api_key = os.environ['DOMINO_USER_API_KEY']
 with open('setup.py') as f:
     c = f.read()
-    
+
 TAG = c.partition('version=')[2].partition(',')[0]
 
 def getOwnerId():
@@ -29,7 +31,7 @@ def buildModel():
     headers = {"Content-Type": "application/json", "X-Domino-Api-Key": user_api_key}
     json_data = js.dumps(
     		{
-	    		"projectId": ""+projectId+"", 
+	    		"projectId": ""+projectId+"",
 	    		"inferenceFunctionFile": "model_pip_pkg/model.py",
 	    		"inferenceFunctionToCall": "my_model",
 	    		"environmentId": None,
@@ -77,7 +79,7 @@ def exportModelIfBuilt(buildModelStatus):
 			break
 		numberOfRetries += 1
 		time.sleep(60) #sleep for 60 seconds before checking model build status again
-	
+
 	return exportModelResponse
 
 def getExportModelStatus(exportId):
@@ -89,7 +91,7 @@ def shareExportStatus(exportId):
 	numberOfChecks = 0
 
 	while(exportModelIsComplete is not True):
-		
+
 		exportModelStatusResponse = getExportModelStatus(exportId)
 		logging.info('number of checks: '+str(numberOfChecks)+', export model status: '+str(exportModelStatusResponse))
 		if(exportModelStatusResponse.get("status") == "complete"):
@@ -100,14 +102,14 @@ def shareExportStatus(exportId):
 			break
 		numberOfChecks += 1
 		time.sleep(60) #sleep for 60 seconds before checking model export again
-	
+
 	return exportModelResponse
 
 
 if __name__== "__main__":
 
-	project_name = "churn-model"
-	domino_url = "demo.dominodatalab.com"
+	project_name = "ci-cd"
+	domino_url = "test.se-team-sandbox.domino.tech"
 
 	logging.info("Starting model build...")
 	buildModelResponse = buildModel()
@@ -117,5 +119,3 @@ if __name__== "__main__":
 	time.sleep(120)
 	buildModelStatus = getModelBuildStatus(buildModelId, buildModelVersionNumber).get("status")
 	logging.info('buildModelStatus is '+buildModelStatus)
-
-
